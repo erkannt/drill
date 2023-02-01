@@ -55,4 +55,8 @@ impl Runnable for Exec {
       context.insert(key.to_owned(), json!(output));
     }
   }
+
+  fn tags(&self, tags: &Vec<&str>) -> bool {
+    true
+  }
 }

@@ -42,4 +42,8 @@ impl Runnable for Assign {
 
     context.insert(self.key.to_owned(), json!(self.value.to_owned()));
   }
+
+  fn tags(&self, tags: &Vec<&str>) -> bool {
+    true
+  }
 }

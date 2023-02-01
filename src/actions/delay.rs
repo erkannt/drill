@@ -42,4 +42,8 @@ impl Runnable for Delay {
       println!("{:width$} {}{}", self.name.green(), self.seconds.to_string().cyan().bold(), "s".magenta(), width = 25);
     }
   }
+
+  fn tags(&self, tags: &Vec<&str>) -> bool {
+    true
+  }
 }

@@ -21,6 +21,7 @@ use std::fmt;
 #[async_trait]
 pub trait Runnable {
   async fn execute(&self, context: &mut Context, reports: &mut Reports, pool: &Pool, config: &Config);
+  fn tags(&self, tags: &Vec<&str>) -> bool;
 }
 
 #[derive(Clone)]

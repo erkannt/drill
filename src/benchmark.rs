@@ -40,7 +40,14 @@ async fn run_iteration(benchmark: Arc<Benchmark>, pool: Pool, config: Arc<Config
   context.insert("iteration".to_string(), json!(iteration.to_string()));
   context.insert("base".to_string(), json!(config.base.to_string()));
 
-  for item in benchmark.iter() {
+  let items = benchmark.iter().filter(|item| {
+    return item.tags(&vec!["asd"]);
+  });
+  // if tags.should_skip_item(item) {
+  //   continue;
+  // }
+
+  for item in items {
     item.execute(&mut context, &mut reports, &pool, &config).await;
   }
 
@@ -55,9 +62,7 @@ fn join<S: ToString>(l: Vec<S>, sep: &str) -> String {
 }
 
 #[allow(clippy::too_many_arguments)]
-pub fn execute(benchmark_path: &str, report_path_option: Option<&str>, relaxed_interpolations: bool, no_check_certificate: bool, quiet: bool, nanosec: bool, timeout: Option<&str>, verbose: bool, tags: &Tags) -> BenchmarkResult {
-  let config = Arc::new(Config::new(benchmark_path, relaxed_interpolations, no_check_certificate, quiet, nanosec, timeout.map_or(10, |t| t.parse().unwrap_or(10)), verbose));
-
+pub fn execute(benchmark_path: &str, report_path_option: Option<&str>, config: Arc<Config>) -> BenchmarkResult {
   if report_path_option.is_some() {
     println!("{}: {}. Ignoring {} and {} properties...", "Report mode".yellow(), "on".purple(), "concurrency".yellow(), "iterations".yellow());
   } else {
@@ -76,7 +81,7 @@ pub fn execute(benchmark_path: &str, report_path_option: Option<&str>, relaxed_i
     let mut benchmark: Benchmark = Benchmark::new();
     let pool_store: PoolStore = PoolStore::new();
 
-    include::expand_from_filepath(benchmark_path, &mut benchmark, Some("plan"), tags);
+    include::expand_from_filepath(config.benchmark_path, &mut benchmark, Some("plan"));
 
     if benchmark.is_empty() {
       eprintln!("Empty benchmark. Exiting.");

@@ -326,6 +326,10 @@ impl Runnable for Request {
       }
     }
   }
+
+  fn tags(&self, tags: &Vec<&str>) -> bool {
+    true
+  }
 }
 
 fn log_request(request: &reqwest::Request) {

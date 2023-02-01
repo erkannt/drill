@@ -8,6 +8,8 @@ mod reader;
 mod tags;
 mod writer;
 
+use std::sync::Arc;
+
 use crate::actions::Report;
 use clap::crate_version;
 use clap::{App, Arg};
@@ -43,14 +45,14 @@ fn main() {
     process::exit(0);
   };
 
-  let tags = tags::Tags::new(tags_option, skip_tags_option);
-
   if list_tasks {
     tags::list_benchmark_file_tasks(benchmark_file, &tags);
     process::exit(0);
   };
 
-  let benchmark_result = benchmark::execute(benchmark_file, report_path_option, relaxed_interpolations, no_check_certificate, quiet, nanosec, timeout, verbose, &tags);
+  let config = Arc::new(Config::new(benchmark_path, relaxed_interpolations, no_check_certificate, quiet, nanosec, timeout.map_or(10, |t| t.parse().unwrap_or(10)), verbose, tags_option, skip_tags_option));
+
+  let benchmark_result = benchmark::execute(benchmark_path, report_path_option, config);
   let list_reports = benchmark_result.reports;
   let duration = benchmark_result.duration;
 

@@ -50,4 +50,8 @@ impl Runnable for Assert {
       panic!("Assertion mismatched: {} != {}", stored, assertion);
     }
   }
+
+  fn tags(&self, tags: &Vec<&str>) -> bool {
+    true
+  }
 }
